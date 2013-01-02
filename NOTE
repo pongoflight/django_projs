@@ -1,0 +1,106 @@
+1、创建项目：
+django-admin.py startproject pysite
+
+2、运行内置web服务器
+./manage.py runserver
+
+3、配置setting.py
+
+import os
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3', 
+        'NAME': os.path.join(os.path.dirname(__file__), 'pysite.db'),
+        'USER': '',                      # Not used with sqlite3.
+        'PASSWORD': '',                  # Not used with sqlite3.
+        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+    }
+}
+
+TIME_ZONE = 'Asia/Shanghai'
+
+LANGUAGE_CODE = 'zh-CN'
+
+TEMPLATE_DIRS = (
+    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+    os.path.join(os.path.dirname(__file__), 'templates'),
+)
+
+4、创建APP
+../manage.py startapp svnmgr
+vim models.py
+
+class Logger(models.Model):
+    fd_title = models.CharField(max_length=31)
+    fd_text = models.CharField(max_length=255)
+    fd_time = models.DateTimeField(auto_now=True)
+
+vim settings.py
+
+INSTALLED_APPS = (
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    # Uncomment the next line to enable the admin:
+    # 'django.contrib.admin',
+    # Uncomment the next line to enable admin documentation:
+    # 'django.contrib.admindocs',
+    'pysite.svnmgr',
+)
+
+../../manage.py validate
+../../manage.py syncdb
+
+5、激活管理员界面
+取消注释 settings.py:INSTALLED_APPS：'django.contrib.admin'
+INSTALLED_APPS = (
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    # Uncomment the next line to enable the admin:
+    'django.contrib.admin',
+    # Uncomment the next line to enable admin documentation:
+    # 'django.contrib.admindocs',
+    'pysite.svnmgr',
+)
+取消注释：
+urls.py
+# Uncomment the next two lines to enable the admin:
+from django.contrib import admin
+admin.autodiscover()
+
+urlpatterns = patterns('',
+    # Examples:
+    # url(r'^$', 'pysite.views.home', name='home'),
+    # url(r'^pysite/', include('pysite.foo.urls')),
+
+    # Uncomment the admin/doc line below to enable admin documentation:
+    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+
+    # Uncomment the next line to enable the admin:
+    url(r'^admin/', include(admin.site.urls)),
+)
+
+
+建立管理员用户
+../manage.py createsuperuser
+
+添加app到admin
+cd svnmgr
+vim admin.py
+from django.contrib import admin
+from pysite.svnmgr.models import Logger
+
+admin.site.register(Logger)
+
+
